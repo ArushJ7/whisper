@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title || 'Whisper Not Found' %> | WHISPER</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">WHISPER</a>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top: 5rem; padding-bottom: 5rem;">
+    <span class="section-label">Error <%= statusCode || 404 %></span>
+    <h1 style="font-family: var(--font-serif); font-size: 2.2rem; margin-bottom: 1rem;"><%= title || 'This whisper is missing.' %></h1>
+    <p style="color: var(--text-muted); font-size: 1.05rem; margin-bottom: 2rem;"><%= message || 'The page or secret you were looking for could not be located in the archive.' %></p>
+    <a href="/" class="btn btn-burgundy">Return to Home</a>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <div class="logo">WHISPER</div>
+        <p>Say it without saying your name.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

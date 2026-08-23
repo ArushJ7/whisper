@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WHISPER — Anonymous Confessions & Secrets</title>
+  <meta name="description" content="A calm, anonymous web space to share thoughts, confessions, and secrets without judgment.">
+  
+  <!-- Google Fonts: Newsreader (Serif) & Inter (Sans-serif) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header class="header">
+    <div class="nav-container">
+      <a href="#" class="nav-logo">WHISPER</a>
+      <ul class="nav-links">
+        <li><a href="#hero" class="nav-link active">Home</a></li>
+        <li><a href="#explore-section" class="nav-link">Explore</a></li>
+        <li><a href="#submit-section" class="nav-link">Share</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section" id="hero">
+    <div class="container">
+      <h1 class="hero-quote">"Some things are easier to say<br>when nobody knows your name."</h1>
+      <p class="hero-subtext">
+        An intimate, anonymous archive for thoughts, stories, and confessions. No accounts, no tracking, no judgment.
+      </p>
+      <div class="hero-actions">
+        <a href="#random-section" class="btn btn-burgundy" id="btn-hero-read">Read whispers</a>
+        <a href="#submit-section" class="btn btn-outline" id="btn-hero-leave">Leave one</a>
+      </div>
+    </div>
+  </section>
+
+  <main class="main-content">
+
+    <!-- Random Secret Spotlight -->
+    <section class="section" id="random-section">
+      <div class="container">
+        <span class="section-label">Selected Whisper</span>
+        
+        <article class="paper-note" id="random-card">
+          <div class="paper-note-header">
+            <span class="note-tag" id="random-secret-id">WHISPER #--</span>
+          </div>
+          
+          <div class="note-body">
+            <p class="note-text" id="random-secret-text">
+              Loading a whisper from the archive...
+            </p>
+          </div>
+          
+          <div class="paper-note-footer">
+            <span class="note-meta" id="random-secret-date">anonymous • Just now</span>
+            <button class="btn-text-action" id="btn-reveal-another">Read another →</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Submit Secret Section -->
+    <section class="section" id="submit-section">
+      <div class="container">
+        <span class="section-label">Write</span>
+        <h2 class="section-title">Leave something behind.</h2>
+        <p class="section-intro">Your words will remain completely anonymous.</p>
+
+        <div class="writing-desk">
+          <form id="secret-form">
+            <div class="form-group">
+              <textarea 
+                id="secret-text" 
+                name="text" 
+                rows="4" 
+                maxlength="500"
+                placeholder="Something you've never said out loud..."
+                required
+              ></textarea>
+              <div class="char-counter">
+                <span id="char-count">0</span> / 500
+              </div>
+            </div>
+
+            <div class="form-actions-row">
+              <div id="inline-notice" class="inline-notice"></div>
+              <button type="submit" class="btn btn-burgundy" id="btn-submit">
+                Whisper it
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- All Secrets Section -->
+    <section class="section" id="explore-section">
+      <div class="container">
+        <div class="feed-header-row">
+          <div>
+            <span class="section-label">Archive</span>
+            <h2 class="section-title">All Whispers</h2>
+          </div>
+          <span class="feed-count-text" id="secrets-count-text">0 whispers</span>
+        </div>
+
+        <!-- Single-column Editorial Feed -->
+        <div class="editorial-feed" id="editorial-feed">
+          <!-- Dynamically populated via app.js -->
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state hidden" id="empty-state">
+          <p>"No whispers yet. Be the first person to leave one."</p>
+          <a href="#submit-section" class="btn btn-burgundy">Leave a whisper</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-backdrop hidden" id="delete-modal">
+    <div class="modal-card">
+      <h3 class="modal-title">Remove this whisper?</h3>
+      <p class="modal-body">
+        Are you sure you want to remove <span id="modal-secret-id">whisper #--</span> from the public archive? This action cannot be undone.
+      </p>
+      <div class="modal-actions">
+        <button class="btn btn-outline" id="btn-cancel-delete">Cancel</button>
+        <button class="btn btn-burgundy" id="btn-confirm-delete">Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <div class="logo">WHISPER</div>
+        <p>Say it without saying your name.</p>
+      </div>
+      <ul class="footer-links">
+        <li><a href="#hero">Home</a></li>
+        <li><a href="#explore-section">Explore</a></li>
+        <li><a href="#submit-section">Share</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <!-- App JavaScript -->
+  <script src="/js/app.js"></script>
+</body>
+</html>

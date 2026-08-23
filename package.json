@@ -1,0 +1,26 @@
+{
+  "name": "secrets-app",
+  "version": "1.0.0",
+  "description": "An original full-stack anonymous secrets app built with Express REST API, EJS, and Vanilla JS.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "express",
+    "rest-api",
+    "ejs",
+    "secrets",
+    "vanilla-js",
+    "anonymous"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2"
+  }
+}
