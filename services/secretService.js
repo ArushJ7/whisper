@@ -1,4 +1,4 @@
-import { secrets, getNextId } from '../data/secrets.js';
+import pool from '../db.js';
 
 /**
  * Service handling all operations on anonymous secrets.
@@ -9,7 +9,13 @@ export const secretService = {
    * Retrieve all secrets sorted by newest first
    */
   async getAllSecrets() {
-    return [...secrets].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const queryText = 'SELECT * FROM secrets ORDER BY created_at DESC;';
+    const { rows } = await pool.query(queryText);
+    return rows.map(row => ({
+      id: row.id,
+      text: row.content,
+      createdAt: row.created_at
+    }));
   },
 
   /**
@@ -17,16 +23,30 @@ export const secretService = {
    */
   async getSecretById(id) {
     const numericId = Number(id);
-    return secrets.find(secret => secret.id === numericId) || null;
+    const queryText = 'SELECT * FROM secrets WHERE id = $1;';
+    const { rows } = await pool.query(queryText, [numericId]);
+    if (rows.length === 0) return null;
+    const row = rows[0];
+    return {
+      id: row.id,
+      text: row.content,
+      createdAt: row.created_at
+    };
   },
 
   /**
    * Retrieve a random secret from the data store
    */
   async getRandomSecret() {
-    if (secrets.length === 0) return null;
-    const randomIndex = Math.floor(Math.random() * secrets.length);
-    return secrets[randomIndex];
+    const queryText = 'SELECT * FROM secrets ORDER BY RANDOM() LIMIT 1;';
+    const { rows } = await pool.query(queryText);
+    if (rows.length === 0) return null;
+    const row = rows[0];
+    return {
+      id: row.id,
+      text: row.content,
+      createdAt: row.created_at
+    };
   },
 
   /**
@@ -34,13 +54,14 @@ export const secretService = {
    */
   async createSecret(text) {
     const trimmedText = text.trim();
-    const newSecret = {
-      id: getNextId(),
-      text: trimmedText,
-      createdAt: new Date().toISOString()
+    const queryText = 'INSERT INTO secrets (content) VALUES ($1) RETURNING *;';
+    const { rows } = await pool.query(queryText, [trimmedText]);
+    const row = rows[0];
+    return {
+      id: row.id,
+      text: row.content,
+      createdAt: row.created_at
     };
-    secrets.push(newSecret);
-    return newSecret;
   },
 
   /**
@@ -48,11 +69,8 @@ export const secretService = {
    */
   async deleteSecret(id) {
     const numericId = Number(id);
-    const index = secrets.findIndex(secret => secret.id === numericId);
-    if (index === -1) {
-      return false;
-    }
-    secrets.splice(index, 1);
-    return true;
+    const queryText = 'DELETE FROM secrets WHERE id = $1 RETURNING *;';
+    const { rows } = await pool.query(queryText, [numericId]);
+    return rows.length > 0;
   }
 };
