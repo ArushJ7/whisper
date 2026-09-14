@@ -1,7 +1,26 @@
 import express from 'express';
+import { rateLimit } from 'express-rate-limit';
 import { secretController } from '../controllers/secretController.js';
 
 const router = express.Router();
+
+// Stricter rate limit for reporting to prevent abuse
+const reportLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 reports per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Too many reports from this IP, please try again later.' }
+});
+
+// Stricter rate limit for submissions to prevent spam
+const submitLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // Limit each IP to 10 submissions per hour
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'You have reached the whisper submission limit. Please wait awhile before sharing more.' }
+});
 
 // GET /api/secrets - Return all secrets
 router.get('/', secretController.getSecrets);
@@ -12,10 +31,13 @@ router.get('/random', secretController.getRandomSecret);
 // GET /api/secrets/:id - Return a specific secret by ID
 router.get('/:id', secretController.getSecretById);
 
-// POST /api/secrets - Create a new secret
-router.post('/', secretController.createSecret);
+// POST /api/secrets - Create a new secret (with strict rate limiting)
+router.post('/', submitLimiter, secretController.createSecret);
 
-// DELETE /api/secrets/:id - Delete a secret
-router.delete('/:id', secretController.deleteSecret);
+// POST /api/secrets/:id/report - Report a secret (with strict rate limiting)
+router.post('/:id/report', reportLimiter, secretController.reportSecret);
+
+// (The DELETE route is now protected and moved to adminRoutes.js,
+// removing public delete route to enforce admin-only deletions)
 
 export default router;
