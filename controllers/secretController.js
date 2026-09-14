@@ -88,9 +88,9 @@ export const secretController = {
         });
       }
 
-      // Basic sanitization
-      const sanitizedText = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-      const trimmedText = sanitizedText.trim();
+      // Note: XSS escaping is intentionally handled by the frontend (app.js/admin.js escapeHTML)
+      // We don't escape in the DB to avoid double-escaping if we later render this raw or use a different client.
+      const trimmedText = text.trim();
 
       if (trimmedText.length === 0) {
         return res.status(400).json({
@@ -217,7 +217,7 @@ export const secretController = {
     }
   },
 
-  async permanentlyDeleteSecret(req, res, next) {
+  async deleteSecret(req, res, next) {
     try {
       const { id } = req.params;
       const numericId = parseInt(id, 10);

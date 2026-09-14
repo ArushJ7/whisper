@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="admin-feed-item">
         <div class="admin-item-header">
           <span>ID: ${secret.id}</span>
-          <span class="badge ${secret.status === 'active' ? 'active' : 'hidden'}">${secret.status.toUpperCase()}</span>
+          <span class="badge ${secret.status}">${secret.status.toUpperCase()}</span>
         </div>
         <p>${escapeHTML(secret.text)}</p>
         <div style="margin-top: 0.5rem; font-size: 0.9rem;">
@@ -39,11 +39,15 @@ document.addEventListener('DOMContentLoaded', () => {
           <span>Created: ${new Date(secret.createdAt).toLocaleString()}</span>
         </div>
         <div class="admin-actions">
-          ${secret.status === 'active'
-            ? `<button class="btn btn-outline action-btn" data-action="hide" data-id="${secret.id}">Hide</button>`
-            : `<button class="btn btn-outline action-btn" data-action="restore" data-id="${secret.id}">Restore</button>`
+          ${secret.status !== 'deleted' ? (
+            secret.status === 'active'
+              ? `<button class="btn btn-outline action-btn" data-action="hide" data-id="${secret.id}">Hide</button>`
+              : `<button class="btn btn-outline action-btn" data-action="restore" data-id="${secret.id}">Restore</button>`
+          ) : ''}
+          ${secret.status !== 'deleted'
+            ? `<button class="btn btn-burgundy action-btn" data-action="delete" data-id="${secret.id}">Delete</button>`
+            : `<button class="btn btn-outline action-btn" data-action="restore" data-id="${secret.id}">Restore from Trash</button>`
           }
-          <button class="btn btn-burgundy action-btn" data-action="delete" data-id="${secret.id}">Delete Permanently</button>
         </div>
       </div>
     `).join('');
@@ -58,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const id = e.target.getAttribute('data-id');
 
     if (action === 'delete') {
-      if (!confirm('Are you sure you want to permanently delete this secret? This cannot be undone.')) return;
+      if (!confirm('Are you sure you want to delete this secret?')) return;
     }
 
     try {

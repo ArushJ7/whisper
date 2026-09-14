@@ -142,7 +142,7 @@ export const secretService = {
   },
 
   /**
-   * Delete a secret by ID permanently (Admin)
+   * Delete a secret by ID (Soft delete - Admin)
    */
   async deleteSecret(id) {
     const numericId = Number(id);
@@ -150,7 +150,7 @@ export const secretService = {
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
-      const queryText = 'DELETE FROM secrets WHERE id = $1 RETURNING *;';
+      const queryText = "UPDATE secrets SET status = 'deleted' WHERE id = $1 RETURNING *;";
       const { rows } = await client.query(queryText, [numericId]);
 
       if (rows.length > 0) {

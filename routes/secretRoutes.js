@@ -1,7 +1,17 @@
 import express from 'express';
+import { rateLimit } from 'express-rate-limit';
 import { secretController } from '../controllers/secretController.js';
 
 const router = express.Router();
+
+// Stricter rate limit for reporting to prevent abuse
+const reportLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 reports per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Too many reports from this IP, please try again later.' }
+});
 
 // GET /api/secrets - Return all secrets
 router.get('/', secretController.getSecrets);
@@ -15,8 +25,8 @@ router.get('/:id', secretController.getSecretById);
 // POST /api/secrets - Create a new secret
 router.post('/', secretController.createSecret);
 
-// POST /api/secrets/:id/report - Report a secret
-router.post('/:id/report', secretController.reportSecret);
+// POST /api/secrets/:id/report - Report a secret (with strict rate limiting)
+router.post('/:id/report', reportLimiter, secretController.reportSecret);
 
 // (The DELETE route is now protected and moved to adminRoutes.js,
 // removing public delete route to enforce admin-only deletions)

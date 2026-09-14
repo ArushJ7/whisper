@@ -13,6 +13,6 @@ router.post('/logout', adminController.logout);
 router.get('/secrets', requireAdmin, secretController.getAllSecretsAdmin);
 router.patch('/secrets/:id/hide', requireAdmin, secretController.hideSecret);
 router.patch('/secrets/:id/restore', requireAdmin, secretController.restoreSecret);
-router.delete('/secrets/:id', requireAdmin, secretController.permanentlyDeleteSecret);
+router.delete('/secrets/:id', requireAdmin, secretController.deleteSecret);
 
 export default router;
