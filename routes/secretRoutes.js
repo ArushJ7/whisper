@@ -13,6 +13,15 @@ const reportLimiter = rateLimit({
   message: { success: false, error: 'Too many reports from this IP, please try again later.' }
 });
 
+// Stricter rate limit for submissions to prevent spam
+const submitLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // Limit each IP to 10 submissions per hour
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'You have reached the whisper submission limit. Please wait awhile before sharing more.' }
+});
+
 // GET /api/secrets - Return all secrets
 router.get('/', secretController.getSecrets);
 
@@ -22,8 +31,8 @@ router.get('/random', secretController.getRandomSecret);
 // GET /api/secrets/:id - Return a specific secret by ID
 router.get('/:id', secretController.getSecretById);
 
-// POST /api/secrets - Create a new secret
-router.post('/', secretController.createSecret);
+// POST /api/secrets - Create a new secret (with strict rate limiting)
+router.post('/', submitLimiter, secretController.createSecret);
 
 // POST /api/secrets/:id/report - Report a secret (with strict rate limiting)
 router.post('/:id/report', reportLimiter, secretController.reportSecret);

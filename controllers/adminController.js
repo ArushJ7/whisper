@@ -6,9 +6,6 @@ const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
-// Default fallback hash for 'password' if neither env var is provided
-const FALLBACK_HASH = bcrypt.hashSync('password', 10);
-
 export const adminController = {
   async login(req, res, next) {
     try {
@@ -27,8 +24,6 @@ export const adminController = {
         match = await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
       } else if (ADMIN_PASSWORD) {
         match = password === ADMIN_PASSWORD;
-      } else {
-        match = await bcrypt.compare(password, FALLBACK_HASH);
       }
 
       if (!match) {

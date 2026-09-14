@@ -67,9 +67,24 @@ app.use((req, res, next) => {
 // Centralized Error Handling Middleware
 app.use(errorHandler);
 
+// Pre-flight Security Checks
+const verifyEnvironmentConfiguration = () => {
+  if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+    console.error('FATAL ERROR: JWT_SECRET must be defined in production.');
+    process.exit(1);
+  }
+
+  if (!process.env.ADMIN_PASSWORD_HASH && !process.env.ADMIN_PASSWORD) {
+    console.error('FATAL ERROR: Either ADMIN_PASSWORD_HASH or ADMIN_PASSWORD must be defined for admin authentication.');
+    process.exit(1);
+  }
+};
+
 // Start server
 const startServer = async () => {
   try {
+    verifyEnvironmentConfiguration();
+
     // Verify database connection (without exposing connection details)
     await pool.query('SELECT NOW();');
     console.log('PostgreSQL connected successfully');
