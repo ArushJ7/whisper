@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (data.success && data.data) {
         const secret = data.data;
-        randomSecretText.textContent = `"${secret.text}"`;
+        randomSecretText.textContent = `"${secret.text}"`; // textContent automatically escapes HTML
         randomSecretId.textContent = `WHISPER #${formatId(secret.id)}`;
         randomSecretDate.textContent = `anonymous • ${formatDate(secret.createdAt)}`;
       } else {

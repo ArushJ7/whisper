@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_jwt_key_please_change_in_production';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export const requireAdmin = (req, res, next) => {
   const token = req.cookies.admin_token;

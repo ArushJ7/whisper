@@ -69,8 +69,8 @@ app.use(errorHandler);
 
 // Pre-flight Security Checks
 const verifyEnvironmentConfiguration = () => {
-  if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
-    console.error('FATAL ERROR: JWT_SECRET must be defined in production.');
+  if (!process.env.JWT_SECRET) {
+    console.error('FATAL ERROR: JWT_SECRET must be defined in the environment.');
     process.exit(1);
   }
 

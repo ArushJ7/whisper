@@ -8,17 +8,21 @@ An anonymous secrets web application built with Node.js, Express REST API, EJS, 
 - **Frontend**: EJS, CSS3 (Editorial design system), Vanilla JavaScript
 - **Data**: In-memory JavaScript data store (structured for PostgreSQL migration)
 
-## 🚀 Quick Start
+## 🚀 Quick Start (Local Setup)
 
-```bash
-# Install dependencies
-npm install
+1. Ensure you have PostgreSQL running locally or have a remote connection string.
+2. Copy the example environment variables:
+   ```bash
+   cp .env.example .env
+   ```
+3. Edit `.env` and fill in your connection string and authentication secrets.
+4. Install dependencies and start the server:
+   ```bash
+   npm install
+   npm start
+   ```
 
-# Start server
-npm start
-```
-
-Visit the app at `https://whisper-arush-jain.vercel.app/`.
+Visit the app at `http://localhost:3000`.
 
 ## 📡 REST API Endpoints
 
@@ -60,8 +64,8 @@ When deploying Whisper to a production environment (like Heroku, Render, Vercel,
 
 1. **Environment Variables**:
    - `DATABASE_URL`: Must point to your Neon PostgreSQL database.
-   - `JWT_SECRET`: Must be a long, unpredictable random string (do NOT use the default).
-   - `ADMIN_PASSWORD_HASH` **OR** `ADMIN_PASSWORD`: Configure the admin password. It is safer to use `ADMIN_PASSWORD_HASH` (using a bcrypt hash). The app will refuse to start if neither is provided.
+   - `JWT_SECRET`: Must be a long, unpredictable random string. The app will fail to start if this is missing.
+   - `ADMIN_PASSWORD_HASH` **OR** `ADMIN_PASSWORD`: Configure the admin password. For production, **always** prefer `ADMIN_PASSWORD_HASH` (using a bcrypt hash) to avoid plain text passwords in your environment. The app will refuse to start if neither is provided.
    - `NODE_ENV=production`: This triggers strict cookie configurations (like `Secure: true`).
 
 2. **Reverse Proxies & Rate Limiting**:
