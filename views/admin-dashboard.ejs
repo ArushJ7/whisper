@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WHISPER — Moderation</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Google Fonts: Newsreader (Serif) & Inter (Sans-serif) — same as public page -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+
+  <!-- Shared public stylesheet -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- Shared WHISPER Header -->
+  <header class="header">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">WHISPER</a>
+      <div class="admin-nav-right">
+        <span class="admin-nav-label">Moderation</span>
+        <button id="btn-logout" class="btn btn-outline" aria-label="Log out of admin">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <!-- Summary strip -->
+    <section class="section admin-summary-section" id="admin-summary">
+      <div class="container">
+        <div class="admin-summary-strip" id="admin-summary-strip">
+          <!-- Populated by admin.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Moderation Queue -->
+    <section class="section" id="moderation-queue">
+      <div class="container">
+        <div class="feed-header-row">
+          <div>
+            <span class="section-label">Moderation</span>
+            <h1 class="section-title">Whisper Queue</h1>
+          </div>
+          <span class="feed-count-text" id="admin-count-text">—</span>
+        </div>
+
+        <!-- Admin secret cards — populated by admin.js -->
+        <div id="admin-secrets-list" aria-live="polite">
+          <p class="admin-loading-text">Loading whispers…</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer — same as public page -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <div class="logo">WHISPER</div>
+        <p>Moderation Console</p>
+      </div>
+      <ul class="footer-links">
+        <li><a href="/">Public Site</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>

@@ -452,6 +452,20 @@ textarea::placeholder {
   color: var(--text-light);
 }
 
+.feed-count-text {
+  font-size: 0.8125rem;
+  color: var(--text-light);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Report button: inherits .btn-text-action, adds a subtle red hover cue */
+.action-report:hover,
+.action-report:focus-visible {
+  color: var(--accent-burgundy);
+  text-decoration-color: var(--accent-burgundy);
+  outline-offset: 3px;
+}
+
 /* Empty state */
 .empty-state {
   text-align: center;
@@ -569,5 +583,280 @@ textarea::placeholder {
   .footer-content {
     flex-direction: column;
     gap: 1.5rem;
+  }
+}
+
+/* ==========================================================================
+   12. ADMIN — Moderation Console
+   Uses only shared design tokens. No new palette introduced.
+   ========================================================================== */
+
+/* Navigation right-side group (label + logout button) */
+.admin-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.admin-nav-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  font-family: var(--font-sans);
+}
+
+/* Summary strip */
+.admin-summary-section {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.admin-summary-strip {
+  display: flex;
+  gap: 2.5rem;
+  align-items: baseline;
+}
+
+.summary-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.summary-value {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  font-weight: 500;
+  color: var(--text-main);
+  line-height: 1.1;
+}
+
+.summary-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-light);
+}
+
+.summary-stat--flagged .summary-value {
+  color: var(--accent-burgundy);
+}
+
+/* Moderation queue card — built on top of public feed-item patterns */
+.admin-card {
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--border-color);
+  transition: var(--transition-fast);
+}
+
+.admin-card:first-child { padding-top: 0; }
+.admin-card:last-child  { border-bottom: none; }
+
+/* Dimmed appearance for non-active items */
+.admin-card--hidden  { opacity: 0.6; }
+.admin-card--deleted { opacity: 0.45; }
+
+/* Subtle left accent for flagged (reported) active whispers */
+.admin-card--flagged {
+  padding-left: 1rem;
+  border-left: 3px solid var(--accent-burgundy);
+  margin-left: -1rem;
+}
+
+/* Card header row */
+.admin-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.admin-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Status badge — uses only design-token colours */
+.admin-status-badge {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+}
+
+.admin-status-badge--active {
+  color: var(--accent-burgundy);
+  border-color: rgba(143, 38, 56, 0.25);
+  background: rgba(143, 38, 56, 0.06);
+}
+
+.admin-status-badge--hidden {
+  color: var(--accent-terracotta);
+  border-color: rgba(201, 107, 53, 0.25);
+  background: rgba(201, 107, 53, 0.07);
+}
+
+.admin-status-badge--deleted {
+  color: var(--text-light);
+  border-color: var(--border-color);
+  background: var(--bg-hover);
+  text-decoration: line-through;
+}
+
+/* Report count pill */
+.admin-report-pill {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-burgundy);
+  background: rgba(143, 38, 56, 0.07);
+  border: 1px solid rgba(143, 38, 56, 0.2);
+  border-radius: 2rem;
+  padding: 0.2rem 0.6rem;
+  white-space: nowrap;
+}
+
+/* Whisper content text */
+.admin-card-text {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text-main);
+  margin-bottom: 1rem;
+}
+
+.admin-card--deleted .admin-card-text {
+  color: var(--text-light);
+}
+
+/* Card footer: date + action buttons */
+.admin-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.admin-card-date {
+  font-size: 0.8125rem;
+  color: var(--text-light);
+}
+
+.admin-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+/* Delete button: uses outline style with a subtle burgundy edge */
+.btn-admin-delete {
+  background: transparent;
+  color: var(--accent-burgundy);
+  border: 1px solid rgba(143, 38, 56, 0.35);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1.3rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-admin-delete:hover {
+  background: rgba(143, 38, 56, 0.07);
+  border-color: var(--accent-burgundy);
+}
+
+/* Loading / empty state */
+.admin-loading-text {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  color: var(--text-light);
+  font-style: italic;
+  padding: 2rem 0;
+}
+
+/* ---- Admin Login ---- */
+.admin-login-body {
+  background: var(--bg-main);
+}
+
+.admin-login-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 4rem 0;
+}
+
+.admin-login-card {
+  max-width: 420px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.admin-login-heading {
+  margin-bottom: 2rem;
+}
+
+.admin-field-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.admin-text-input {
+  width: 100%;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: var(--text-main);
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+.admin-text-input:focus {
+  border-color: var(--accent-burgundy);
+  background: var(--bg-card);
+}
+
+.admin-login-actions {
+  margin-top: 1.75rem;
+}
+
+/* ---- Responsive admin adjustments ---- */
+@media (max-width: 640px) {
+  .admin-summary-strip {
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .admin-card-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .admin-card--flagged {
+    margin-left: -0.75rem;
+    padding-left: 0.75rem;
   }
 }
