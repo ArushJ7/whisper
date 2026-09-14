@@ -2,7 +2,11 @@ import 'dotenv/config';
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import cookieParser from 'cookie-parser';
+import { rateLimit } from 'express-rate-limit';
 import secretRoutes from './routes/secretRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import { requireAdmin } from './middleware/authMiddleware.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import pool, { initDatabase } from './db.js';
 
@@ -12,9 +16,21 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.set('trust proxy', 1);
+
+// Apply rate limiting to API routes
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: { success: false, error: 'Too many requests, please try again later.' }
+});
+
 // Body parsing middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
@@ -28,8 +44,18 @@ app.get('/', (req, res) => {
   res.render('index');
 });
 
+// Admin View Routes
+app.get('/admin/login', (req, res) => {
+  res.render('admin-login');
+});
+
+app.get('/admin/dashboard', requireAdmin, (req, res) => {
+  res.render('admin-dashboard');
+});
+
 // REST API Endpoints Router
-app.use('/api/secrets', secretRoutes);
+app.use('/api/secrets', apiLimiter, secretRoutes);
+app.use('/api/admin', apiLimiter, adminRoutes);
 
 // Catch-all 404 Handler for undefined routes
 app.use((req, res, next) => {

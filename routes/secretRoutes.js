@@ -15,7 +15,10 @@ router.get('/:id', secretController.getSecretById);
 // POST /api/secrets - Create a new secret
 router.post('/', secretController.createSecret);
 
-// DELETE /api/secrets/:id - Delete a secret
-router.delete('/:id', secretController.deleteSecret);
+// POST /api/secrets/:id/report - Report a secret
+router.post('/:id/report', secretController.reportSecret);
+
+// (The DELETE route is now protected and moved to adminRoutes.js,
+// removing public delete route to enforce admin-only deletions)
 
 export default router;

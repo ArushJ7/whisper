@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WHISPER Admin Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2rem 5%;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .admin-feed { padding: 2rem 5%; max-width: 800px; margin: 0 auto; }
+    .admin-feed-item {
+      background: var(--paper-color);
+      padding: 1.5rem;
+      border: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+    }
+    .admin-item-header { display: flex; justify-content: space-between; font-family: 'Newsreader', serif; margin-bottom: 1rem; }
+    .badge { padding: 0.25rem 0.5rem; font-size: 0.8rem; border-radius: 4px; }
+    .badge.active { background: #e0f2f1; color: #004d40; }
+    .badge.hidden { background: #ffebee; color: #b71c1c; }
+    .admin-actions { display: flex; gap: 1rem; margin-top: 1rem; }
+    .report-count { color: #b71c1c; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <header class="dashboard-header">
+    <h1>WHISPER Admin</h1>
+    <button id="btn-logout" class="btn btn-outline">Logout</button>
+  </header>
+
+  <main class="admin-feed">
+    <h2>Moderation Queue</h2>
+    <div id="admin-secrets-list">
+      Loading...
+    </div>
+  </main>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>

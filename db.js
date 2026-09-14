@@ -17,10 +17,28 @@ export const initDatabase = async () => {
     CREATE TABLE IF NOT EXISTS secrets (
       id SERIAL PRIMARY KEY,
       content TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      status VARCHAR(20) DEFAULT 'active',
+      report_count INTEGER DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS moderation_logs (
+      id SERIAL PRIMARY KEY,
+      action VARCHAR(50) NOT NULL,
+      secret_id INTEGER NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `;
   await pool.query(queryText);
+
+  // Note: if the 'secrets' table already exists, the columns need to be added.
+  // Using ALTER TABLE in case the tables exist without those columns:
+  try {
+    await pool.query("ALTER TABLE secrets ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'active'");
+    await pool.query("ALTER TABLE secrets ADD COLUMN IF NOT EXISTS report_count INTEGER DEFAULT 0");
+  } catch (err) {
+    console.log("Columns likely already exist or minor alter error:", err.message);
+  }
 };
 
 export default pool;

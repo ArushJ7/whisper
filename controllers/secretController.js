@@ -88,7 +88,9 @@ export const secretController = {
         });
       }
 
-      const trimmedText = text.trim();
+      // Basic sanitization
+      const sanitizedText = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const trimmedText = sanitizedText.trim();
 
       if (trimmedText.length === 0) {
         return res.status(400).json({
@@ -125,10 +127,97 @@ export const secretController = {
   },
 
   /**
-   * DELETE /api/secrets/:id
-   * Delete a secret by ID
+   * POST /api/secrets/:id/report
+   * Report a secret
    */
-  async deleteSecret(req, res, next) {
+  async reportSecret(req, res, next) {
+    try {
+      const { id } = req.params;
+      const numericId = parseInt(id, 10);
+
+      if (isNaN(numericId) || numericId <= 0) {
+        return res.status(400).json({
+          success: false,
+          error: "Invalid secret ID format."
+        });
+      }
+
+      const reported = await secretService.reportSecret(numericId);
+
+      if (!reported) {
+        return res.status(404).json({
+          success: false,
+          error: `Secret with ID ${numericId} could not be found or is not active.`
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: `Secret #${numericId} reported.`
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // --- ADMIN ACTIONS ---
+
+  async getAllSecretsAdmin(req, res, next) {
+    try {
+      const allSecrets = await secretService.getAllSecretsAdmin();
+      res.status(200).json({
+        success: true,
+        count: allSecrets.length,
+        data: allSecrets
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async hideSecret(req, res, next) {
+    try {
+      const { id } = req.params;
+      const numericId = parseInt(id, 10);
+
+      if (isNaN(numericId) || numericId <= 0) {
+        return res.status(400).json({ success: false, error: "Invalid secret ID format." });
+      }
+
+      const hidden = await secretService.hideSecret(numericId);
+
+      if (!hidden) {
+        return res.status(404).json({ success: false, error: `Secret with ID ${numericId} could not be found.` });
+      }
+
+      res.status(200).json({ success: true, message: `Secret #${numericId} hidden.` });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async restoreSecret(req, res, next) {
+    try {
+      const { id } = req.params;
+      const numericId = parseInt(id, 10);
+
+      if (isNaN(numericId) || numericId <= 0) {
+        return res.status(400).json({ success: false, error: "Invalid secret ID format." });
+      }
+
+      const restored = await secretService.restoreSecret(numericId);
+
+      if (!restored) {
+        return res.status(404).json({ success: false, error: `Secret with ID ${numericId} could not be found.` });
+      }
+
+      res.status(200).json({ success: true, message: `Secret #${numericId} restored.` });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async permanentlyDeleteSecret(req, res, next) {
     try {
       const { id } = req.params;
       const numericId = parseInt(id, 10);

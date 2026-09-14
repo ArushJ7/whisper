@@ -26,12 +26,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const emptyState = document.getElementById('empty-state');
   const secretsCountText = document.getElementById('secrets-count-text');
 
-  const deleteModal = document.getElementById('delete-modal');
+  const reportModal = document.getElementById('report-modal');
   const modalSecretId = document.getElementById('modal-secret-id');
-  const btnCancelDelete = document.getElementById('btn-cancel-delete');
-  const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+  const btnCancelReport = document.getElementById('btn-cancel-report');
+  const btnConfirmReport = document.getElementById('btn-confirm-report');
 
-  let pendingDeleteId = null;
+  let pendingReportId = null;
 
   init();
 
@@ -54,11 +54,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     secretForm?.addEventListener('submit', handleFormSubmit);
 
-    btnCancelDelete?.addEventListener('click', closeDeleteModal);
-    deleteModal?.addEventListener('click', (e) => {
-      if (e.target === deleteModal) closeDeleteModal();
+    btnCancelReport?.addEventListener('click', closeReportModal);
+    reportModal?.addEventListener('click', (e) => {
+      if (e.target === reportModal) closeReportModal();
     });
-    btnConfirmDelete?.addEventListener('click', executePendingDelete);
+    btnConfirmReport?.addEventListener('click', executePendingReport);
   }
 
   /* --------------------------------------------------------------------------
@@ -152,52 +152,40 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* --------------------------------------------------------------------------
-     4. REST API: DELETE /api/secrets/:id
+     4. REST API: POST /api/secrets/:id/report
      -------------------------------------------------------------------------- */
-  function confirmDeleteSecret(id) {
-    pendingDeleteId = id;
+  function confirmReportSecret(id) {
+    pendingReportId = id;
     modalSecretId.textContent = `whisper #${formatId(id)}`;
-    deleteModal.classList.remove('hidden');
+    reportModal.classList.remove('hidden');
   }
 
-  function closeDeleteModal() {
-    pendingDeleteId = null;
-    deleteModal.classList.add('hidden');
+  function closeReportModal() {
+    pendingReportId = null;
+    reportModal.classList.add('hidden');
   }
 
-  async function executePendingDelete() {
-    if (!pendingDeleteId) return;
+  async function executePendingReport() {
+    if (!pendingReportId) return;
 
-    const idToDelete = pendingDeleteId;
-    closeDeleteModal();
+    const idToReport = pendingReportId;
+    closeReportModal();
 
     try {
-      const response = await fetch(`/api/secrets/${idToDelete}`, {
-        method: 'DELETE'
+      const response = await fetch(`/api/secrets/${idToReport}/report`, {
+        method: 'POST'
       });
 
       const data = await response.json();
 
       if (response.status === 200 && data.success) {
-        showNotice(`Whisper #${formatId(idToDelete)} removed.`, 'success');
-
-        const itemElement = document.querySelector(`[data-secret-id="${idToDelete}"]`);
-        if (itemElement) {
-          itemElement.style.opacity = '0';
-          itemElement.style.transition = 'opacity 0.3s ease';
-          setTimeout(() => {
-            itemElement.remove();
-            fetchAllSecrets();
-          }, 300);
-        } else {
-          fetchAllSecrets();
-        }
+        showNotice(`Whisper #${formatId(idToReport)} reported.`, 'success');
       } else {
-        showNotice(data.error || 'Could not remove whisper.', 'error');
+        showNotice(data.error || 'Could not report whisper.', 'error');
       }
     } catch (error) {
-      console.error(`Error deleting secret #${idToDelete}:`, error);
-      showNotice('Error attempting to remove whisper.', 'error');
+      console.error(`Error reporting secret #${idToReport}:`, error);
+      showNotice('Error attempting to report whisper.', 'error');
     }
   }
 
@@ -234,13 +222,13 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="dot-separator">•</span>
             <span>${formatDate(secret.createdAt)}</span>
           </div>
-          <button class="btn-text-action action-remove" data-id="${secret.id}">remove</button>
+          <button class="btn-text-action action-report" data-id="${secret.id}">report</button>
         </div>
       `;
 
-      const removeBtn = item.querySelector('.action-remove');
-      removeBtn.addEventListener('click', () => {
-        confirmDeleteSecret(secret.id);
+      const reportBtn = item.querySelector('.action-report');
+      reportBtn.addEventListener('click', () => {
+        confirmReportSecret(secret.id);
       });
 
       editorialFeed.appendChild(item);
