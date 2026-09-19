@@ -1,7 +1,7 @@
 /**
  * WHISPER — Admin Moderation Console
  * All API calls are identical to the original implementation.
- * Only the rendered HTML has been updated to match the public design system.
+ * Standard browser alerts/confirms replaced with branded toast system and modal.
  *
  * API endpoints used:
  *   GET    /api/admin/secrets
@@ -12,10 +12,20 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  const secretsList   = document.getElementById('admin-secrets-list');
-  const btnLogout     = document.getElementById('btn-logout');
+  const secretsList    = document.getElementById('admin-secrets-list');
+  const btnLogout      = document.getElementById('btn-logout');
   const adminCountText = document.getElementById('admin-count-text');
-  const summaryStrip  = document.getElementById('admin-summary-strip');
+  const summaryStrip   = document.getElementById('admin-summary-strip');
+  const toastContainer = document.getElementById('toast-container');
+
+  // Confirmation Modal elements
+  const confirmModal     = document.getElementById('admin-confirm-modal');
+  const modalTitle       = document.getElementById('admin-modal-title');
+  const modalBody        = document.getElementById('admin-modal-body');
+  const btnModalCancel   = document.getElementById('btn-admin-modal-cancel');
+  const btnModalConfirm  = document.getElementById('btn-admin-modal-confirm');
+
+  let pendingAction = null;
 
   /* ------------------------------------------------------------------
      Fetch & render
@@ -41,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /* ------------------------------------------------------------------
-     Summary strip (real counts from database data)
+     Summary strip
   ------------------------------------------------------------------ */
   const renderSummary = (secrets) => {
     const total   = secrets.length;
@@ -50,38 +60,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const deleted = secrets.filter(s => s.status === 'deleted').length;
     const flagged = secrets.filter(s => s.reportCount > 0 && s.status === 'active').length;
 
-    adminCountText.textContent = `${total} ${total === 1 ? 'whisper' : 'whispers'}`;
+    if (adminCountText) {
+      adminCountText.textContent = `${total} ${total === 1 ? 'whisper' : 'whispers'}`;
+    }
 
-    summaryStrip.innerHTML = `
-      <div class="summary-stat">
-        <span class="summary-value">${active}</span>
-        <span class="summary-label">active</span>
-      </div>
-      <div class="summary-stat summary-stat--flagged">
-        <span class="summary-value">${flagged}</span>
-        <span class="summary-label">reported</span>
-      </div>
-      <div class="summary-stat">
-        <span class="summary-value">${hidden}</span>
-        <span class="summary-label">hidden</span>
-      </div>
-      <div class="summary-stat">
-        <span class="summary-value">${deleted}</span>
-        <span class="summary-label">deleted</span>
-      </div>
-    `;
+    if (summaryStrip) {
+      summaryStrip.innerHTML = `
+        <div class="summary-stat">
+          <span class="summary-value">${active}</span>
+          <span class="summary-label">active</span>
+        </div>
+        <div class="summary-stat summary-stat--flagged">
+          <span class="summary-value">${flagged}</span>
+          <span class="summary-label">reported</span>
+        </div>
+        <div class="summary-stat">
+          <span class="summary-value">${hidden}</span>
+          <span class="summary-label">hidden</span>
+        </div>
+        <div class="summary-stat">
+          <span class="summary-value">${deleted}</span>
+          <span class="summary-label">deleted</span>
+        </div>
+      `;
+    }
   };
 
   /* ------------------------------------------------------------------
      Render the moderation queue
   ------------------------------------------------------------------ */
   const renderSecrets = (secrets) => {
+    if (!secretsList) return;
+
     if (secrets.length === 0) {
       secretsList.innerHTML = '<p class="admin-loading-text">No whispers in the queue.</p>';
       return;
     }
 
-    secretsList.innerHTML = secrets.map(secret => {
+    secretsList.innerHTML = secrets.map((secret, index) => {
       const isFlagged = secret.reportCount > 0 && secret.status === 'active';
       const cardClass = [
         'admin-card',
@@ -99,7 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ? new Date(secret.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
         : 'unknown date';
 
-      /* Action buttons — unchanged logic, updated classes */
       let actionHTML = '';
       if (secret.status === 'active') {
         actionHTML = `
@@ -118,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       return `
-        <article class="${cardClass}" data-secret-id="${secret.id}">
+        <article class="${cardClass}" data-secret-id="${secret.id}" style="animation-delay: ${Math.min(index * 0.04, 0.3)}s">
           <div class="admin-card-header">
             <div class="admin-card-meta">
               <span class="feed-item-id">WHISPER #${formatId(secret.id)}</span>
@@ -140,23 +155,66 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
 
     document.querySelectorAll('.action-btn').forEach(btn => {
-      btn.addEventListener('click', handleAction);
+      btn.addEventListener('click', handleActionClick);
     });
   };
 
   /* ------------------------------------------------------------------
-     Action handler — API calls unchanged
+     Action dispatching & custom confirmation modal
   ------------------------------------------------------------------ */
-  const handleAction = async (e) => {
+  const handleActionClick = (e) => {
     const btn    = e.currentTarget;
     const action = btn.getAttribute('data-action');
     const id     = btn.getAttribute('data-id');
 
     if (action === 'delete') {
-      if (!confirm('Permanently soft-delete this whisper? You can restore it later.')) return;
+      openConfirmModal(
+        'Delete Whisper',
+        `Are you sure you want to mark whisper #${formatId(id)} as deleted?`,
+        () => performAction(btn, action, id)
+      );
+    } else {
+      performAction(btn, action, id);
+    }
+  };
+
+  const openConfirmModal = (title, body, onConfirm) => {
+    if (!confirmModal) {
+      if (confirm(`${title}: ${body}`)) onConfirm();
+      return;
     }
 
-    /* Disable button during request */
+    if (modalTitle) modalTitle.textContent = title;
+    if (modalBody) modalBody.textContent = body;
+    pendingAction = onConfirm;
+    confirmModal.classList.remove('hidden');
+  };
+
+  const closeConfirmModal = () => {
+    pendingAction = null;
+    if (confirmModal) confirmModal.classList.add('hidden');
+  };
+
+  btnModalCancel?.addEventListener('click', closeConfirmModal);
+  confirmModal?.addEventListener('click', (e) => {
+    if (e.target === confirmModal) closeConfirmModal();
+  });
+  btnModalConfirm?.addEventListener('click', () => {
+    const actionToRun = pendingAction;
+    closeConfirmModal();
+    if (actionToRun) actionToRun();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && confirmModal && !confirmModal.classList.contains('hidden')) {
+      closeConfirmModal();
+    }
+  });
+
+  /* ------------------------------------------------------------------
+     Perform Action API Calls
+  ------------------------------------------------------------------ */
+  const performAction = async (btn, action, id) => {
     btn.disabled = true;
     const originalText = btn.textContent;
     btn.textContent = '…';
@@ -175,14 +233,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const res = await fetch(url, { method });
       if (res.ok) {
+        showToast(`Whisper #${formatId(id)} updated (${action}).`, 'success');
         fetchSecrets();
       } else {
-        alert('Action failed. Please try again.');
+        showToast('Action failed. Please try again.', 'error');
         btn.disabled = false;
         btn.textContent = originalText;
       }
     } catch (err) {
-      alert('Connection error. Please try again.');
+      showToast('Connection error. Please try again.', 'error');
       btn.disabled = false;
       btn.textContent = originalText;
     }
@@ -191,14 +250,38 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ------------------------------------------------------------------
      Logout
   ------------------------------------------------------------------ */
-  btnLogout.addEventListener('click', async () => {
+  btnLogout?.addEventListener('click', async () => {
     try {
       await fetch('/api/admin/logout', { method: 'POST' });
       window.location.href = '/admin/login';
     } catch (err) {
-      alert('Error logging out.');
+      showToast('Error logging out.', 'error');
     }
   });
+
+  /* ------------------------------------------------------------------
+     Toast Notification System
+  ------------------------------------------------------------------ */
+  function showToast(message, type = 'success') {
+    if (!toastContainer) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast--${type}`;
+    toast.innerHTML = `
+      <span class="toast-icon">${type === 'success' ? '✓' : 'ℹ'}</span>
+      <span class="toast-message">${escapeHTML(message)}</span>
+    `;
+    toastContainer.appendChild(toast);
+
+    requestAnimationFrame(() => {
+      toast.classList.add('toast--visible');
+    });
+
+    setTimeout(() => {
+      toast.classList.remove('toast--visible');
+      setTimeout(() => toast.remove(), 300);
+    }, 3500);
+  }
 
   /* ------------------------------------------------------------------
      Utilities

@@ -20,7 +20,12 @@
   <header class="header">
     <div class="nav-container">
       <a href="#" class="nav-logo">WHISPER</a>
-      <ul class="nav-links">
+      <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul class="nav-links" id="nav-links">
         <li><a href="#hero" class="nav-link active">Home</a></li>
         <li><a href="#explore-section" class="nav-link">Explore</a></li>
         <li><a href="#submit-section" class="nav-link">Share</a></li>
@@ -28,21 +33,32 @@
     </div>
   </header>
 
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
   <!-- Hero Section -->
   <section class="hero-section" id="hero">
     <div class="container">
-      <h1 class="hero-quote">"Some things are easier to say<br>when nobody knows your name."</h1>
-      <p class="hero-subtext">
-        An intimate, anonymous archive for thoughts, stories, and confessions. No accounts, no tracking, no judgment.
-      </p>
-      <div class="hero-actions">
-        <a href="#random-section" class="btn btn-burgundy" id="btn-hero-read">Read whispers</a>
-        <a href="#submit-section" class="btn btn-outline" id="btn-hero-leave">Leave one</a>
+      <div class="hero-content-wrapper">
+        <span class="hero-ornament" aria-hidden="true">“</span>
+        <h1 class="hero-quote">Some things are easier to say<br>when nobody knows your name.</h1>
+        <p class="hero-subtext">
+          An intimate, anonymous archive for thoughts, stories, and confessions. No accounts, no tracking, no judgment.
+        </p>
+        <div class="hero-actions">
+          <a href="#random-section" class="btn btn-burgundy" id="btn-hero-read">Read whispers</a>
+          <a href="#submit-section" class="btn btn-outline" id="btn-hero-leave">Leave one</a>
+        </div>
       </div>
     </div>
   </section>
 
   <main class="main-content">
+    <noscript>
+      <div class="container" style="padding: 2rem 0; text-align: center;">
+        <p style="color: var(--color-error);">Whisper requires JavaScript to load and post anonymous confessions.</p>
+      </div>
+    </noscript>
 
     <!-- Random Secret Spotlight -->
     <section class="section" id="random-section">
@@ -86,7 +102,7 @@
                 placeholder="Something you've never said out loud..."
                 required
               ></textarea>
-              <div class="char-counter">
+              <div class="char-counter" id="char-counter">
                 <span id="char-count">0</span> / 500
               </div>
             </div>
